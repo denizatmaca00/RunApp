@@ -4,7 +4,7 @@
 //
 //  Created by d-datmaca on 4.03.2024.
 // TODO: koşan adam animasyonu eklenebilir.
-// git denemesi commit
+// git denemesi commit 2
 
 import UIKit
 import SnapKit
