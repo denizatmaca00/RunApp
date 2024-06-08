@@ -4,7 +4,7 @@
 //
 //  Created by d-datmaca on 6.03.2024.
 //
-
+//bu bir commit denemesidir.
 import UIKit
 import SnapKit
 import FirebaseDatabase
