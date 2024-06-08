@@ -9,6 +9,7 @@ import UIKit
 import SnapKit
 import FirebaseDatabase
 import FirebaseFirestore
+import FirebaseAuth
 
 protocol ProfileInfoDelegate: AnyObject {
     func didReceiveName(_ name: String)
@@ -23,7 +24,6 @@ class ProfileInfoCollectionViewCell: UICollectionViewCell {
 
     var userName: String = "" {
         didSet {
-            // Değişken değiştiğinde, delegenize yeni kullanıcı adını iletin
             delegate?.didReceiveName(userName)
         }
     }
@@ -111,30 +111,34 @@ class ProfileInfoCollectionViewCell: UICollectionViewCell {
     func getProfileInfosFromFB(){
         let firestoreDB = Firestore.firestore()
         
-        // Firestore'dan "profileInfos" koleksiyonundaki belgeleri dinle
-        firestoreDB.collection("profileInfos").addSnapshotListener { (snapshot, error) in
+        guard let currentUserEmail = Auth.auth().currentUser?.email else {
+            return // Kullanıcı oturum açmamışsa, işlemi sonlandır
+        }
+        
+        firestoreDB.collection("profileInfos").whereField("email", isEqualTo: currentUserEmail).getDocuments { (snapshot, error) in
             if let error = error {
-                print("Hata alındı: \(error.localizedDescription)")
+                print("Belgeleri alırken hata oluştu: \(error)")
                 return
             }
-            
-            // Eğer snapshot boş değilse ve belgeler varsa
-            if let documents = snapshot?.documents {
-                // İlk belgeyi al, sadece bir belge bekliyoruz
-                if let firstDocument = documents.first {
-                    // "name" ve "surname" alanlarını al
-                    let name = firstDocument["name"] as? String ?? ""
-                    let surname = firstDocument["surname"] as? String ?? ""
-                    self.userName = firstDocument["userName"] as? String ?? ""
-                    
-                    // Ad ve soyadı kullanarak label'ı güncelle
-                    DispatchQueue.main.async {
-                        self.labelNameSurname.text = "\(name) \(surname)"
-                    }
+
+            guard let snapshot = snapshot else {return}
+
+            for document in snapshot.documents {
+                let name = document.get("name") as? String ?? ""
+                let surname = document.get("surname") as? String ?? ""
+                let fullName = "\(name) \(surname)"
+                self.userName = document.get("userName") as? String ?? ""
+
+                DispatchQueue.main.async {
+                    self.labelNameSurname.text = fullName
                 }
             }
         }
     }
+   
+
+   
+
 
     private func setupViews() {
         self.contentView.addSubview(containerView)

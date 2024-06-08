@@ -4,6 +4,8 @@
 //
 //  Created by d-datmaca on 5.03.2024.
 // TODO: takvim biraz ileri alınabilir
+// TODO: gün ortada durmuyor
+
 
 import UIKit
 import FirebaseFirestore
@@ -19,18 +21,20 @@ class AnalyticVC: UIViewController {
         label.text = "mayıs 2024"
         return label
     }()
-    
+
     private lazy var collectionViewHorizontal: UICollectionView = {
-        let layout = UICollectionViewFlowLayout()
-        layout.scrollDirection = .horizontal
-        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        collectionView.register(CalenderCollectionViewCell.self, forCellWithReuseIdentifier: CalenderCollectionViewCell.reuseIdentifier)
-        collectionView.backgroundColor = UIColor(named: "preLoginColor")
-        collectionView.showsHorizontalScrollIndicator = false
-        collectionView.dataSource = self
-        collectionView.delegate = self
-        return collectionView
-    }()
+            let layout = UICollectionViewFlowLayout()
+            layout.scrollDirection = .horizontal
+            layout.minimumInteritemSpacing = 0
+            layout.minimumLineSpacing = 0
+            let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+            collectionView.register(CalenderCollectionViewCell.self, forCellWithReuseIdentifier: CalenderCollectionViewCell.reuseIdentifier)
+            collectionView.backgroundColor = UIColor(named: "preLoginColor")
+            collectionView.showsHorizontalScrollIndicator = false
+            return collectionView
+        }()
+
+    
         
     private lazy var containerViewFirst: UIView = {
         let view = UIView()
@@ -116,57 +120,85 @@ class AnalyticVC: UIViewController {
     }
     
     @objc func startButtonTapped(){
-            guard let userID = Auth.auth().currentUser?.uid,
-                  let kmText = kmTextField.textField.text,
-                  let timeText = timeTextField.textField.text,
-                  let km = Double(kmText),
-                  let time = Double(timeText) else {
-                return
-            }
-            
-            firestoreDB.collection("users").document(userID).collection("goalToday").addDocument(data: [
-                "km": km,
-                "time": time
-            ]) { error in
-                if let error = error {
-                    print("Başlangıç koşusu verisi eklenirken hata oluştu: \(error)")
-                } else {
-                    print("Başlangıç koşusu verisi başarıyla eklendi.")
-                    self.kmTextField.textField.text = ""
-                    self.timeTextField.textField.text = ""
-                }
+        guard let currentUserEmail = Auth.auth().currentUser?.email,
+              let kmText = kmTextField.textField.text,
+              let timeText = timeTextField.textField.text,
+              let km = Double(kmText),
+              let time = Double(timeText) else {
+            return
+        }
+        
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "dd.MM.yyyy"
+        let currentDate = dateFormatter.string(from: Date())
+        
+        firestoreDB.collection("users").document(currentUserEmail).collection("goalToday").addDocument(data: [
+            "km": km,
+            "time": time,
+            "date" : currentDate
+        ]) { error in
+            if let error = error {
+                print("Başlangıç koşusu verisi eklenirken hata oluştu: \(error)")
+            } else {
+                print("Başlangıç koşusu verisi başarıyla eklendi.")
+                self.kmTextField.textField.text = ""
+                self.timeTextField.textField.text = ""
             }
         }
-    
+    }
+
     @objc func doneButtonTapped(){
-            guard let userID = Auth.auth().currentUser?.uid,
-                  let kmDoneText = kmDoneTextField.textField.text,
-                  let timeDoneText = timeDoneTextField.textField.text,
-                  let kmDone = Double(kmDoneText),
-                  let timeDone = Double(timeDoneText) else {
-                return
-            }
-            
-            firestoreDB.collection("users").document(userID).collection("goalCompleted").addDocument(data: [
-                "km_done": kmDone,
-                "time_done": timeDone
-            ]) { error in
-                if let error = error {
-                    print("Tamamlanan koşu verisi eklenirken hata oluştu: \(error)")
-                } else {
-                    print("Tamamlanan koşu verisi başarıyla eklendi.")
-                    self.kmDoneTextField.textField.text = ""
-                    self.timeDoneTextField.textField.text = ""
-                }
+        guard let currentUserEmail = Auth.auth().currentUser?.email,
+              let kmDoneText = kmDoneTextField.textField.text,
+              let timeDoneText = timeDoneTextField.textField.text,
+              let kmDone = Double(kmDoneText),
+              let timeDone = Double(timeDoneText) else {
+            return
+        }
+        
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "dd.MM.yyyy"
+        let currentDate = dateFormatter.string(from: Date())
+        
+        firestoreDB.collection("users").document(currentUserEmail).collection("goalCompleted").addDocument(data: [
+            "km_done": kmDone,
+            "time_done": timeDone,
+            "date" : currentDate
+        ]) { error in
+            if let error = error {
+                print("Tamamlanan koşu verisi eklenirken hata oluştu: \(error)")
+            } else {
+                print("Tamamlanan koşu verisi başarıyla eklendi.")
+                self.kmDoneTextField.textField.text = ""
+                self.timeDoneTextField.textField.text = ""
             }
         }
-    
+    }
+
+
+
     override func viewDidLoad() {
         super.viewDidLoad()
         setupViews()
         view.backgroundColor = UIColor(named: "preLoginColor")
+        collectionViewHorizontal.dataSource = self
+        collectionViewHorizontal.delegate = self
     }
-    
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        scrollToStartingItem()
+    }
+
+    private func scrollToStartingItem() {
+        let currentDate = Date()
+        let currentDay = calendar.component(.day, from: currentDate)
+        let indexPath = IndexPath(item: currentDay - 1, section: 0)
+        collectionViewHorizontal.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: false)
+    }
+
+
+
     private func setupViews() {
         let monthFormatter = DateFormatter()
         monthFormatter.dateFormat = "LLLL yyyy"

@@ -6,27 +6,28 @@
 // TODO: yanyana kayan bir collectionview bir de onun altına aşapıya kayan bir colleciton view koymak istiyorum
 
 import UIKit
-import SnapKit
+import FirebaseFirestore
+import FirebaseAuth
 
-
-
-class HomeVC: UIViewController, ProfileInfoDelegate {
-     
+class HomeVC: UIViewController {
+    
     var username = ""
-       
-       private lazy var labelHomeSecond: UILabel = {
-           let lbl = UILabel()
-           lbl.font = UIFont(name: "Arial Bold", size: 18)
-           return lbl
-       }()
-       
-       private lazy var labelHomeThird: UILabel = {
-           let lbl = UILabel()
-           lbl.textColor = UIColor(named: "TabbarColor")
-           lbl.font = UIFont(name: "Arial Bold", size: 18)
-           return lbl
-       }()
-       
+    var runsAim: [[String: Any]] = []
+    var runsDone: [[String: Any]] = []
+
+    private lazy var labelHomeSecond: UILabel = {
+        let lbl = UILabel()
+        lbl.font = UIFont(name: "Arial Bold", size: 18)
+        return lbl
+    }()
+    
+    private lazy var labelHomeThird: UILabel = {
+        let lbl = UILabel()
+        lbl.textColor = UIColor(named: "TabbarColor")
+        lbl.font = UIFont(name: "Arial Bold", size: 18)
+        return lbl
+    }()
+    
     private lazy var collectionViewHorizontalTitleLabel: UILabel = {
         let lbl = UILabel()
         lbl.text = "Nerede koşabilirsin?"
@@ -75,30 +76,114 @@ class HomeVC: UIViewController, ProfileInfoDelegate {
     }()
     
     override func viewDidLoad() {
-         view.backgroundColor = UIColor(named: "preLoginColor")
-         setupViews()
-         navigationController?.navigationBar.isHidden = true
-         
-         let profileCell = ProfileInfoCollectionViewCell()
-         profileCell.delegate = self
-         
-         profileCell.getProfileInfosFromFB()
-         super.viewDidLoad()
+        super.viewDidLoad()
+        view.backgroundColor = UIColor(named: "preLoginColor")
+        setupViews()
+        navigationController?.navigationBar.isHidden = true
+        
+        let profileCell = ProfileInfoCollectionViewCell()
+        profileCell.delegate = self
+        
+        profileCell.getProfileInfosFromFB()
+        
+        if let currentUser = Auth.auth().currentUser {
+            getRunsAimFromFirestore(forUser: currentUser)
+            getRunsFromFirestore(forUser: currentUser)
+        }
+    }
 
-     }
-     
-     func didReceiveName(_ name: String) {
-         username = name
-         labelHomeSecond.text = name
-         labelHomeThird.text = "Günaydın \(name)"
-     }
+    private func getRunsAimFromFirestore(forUser user: User) {
+        let firestoreDB = Firestore.firestore()
+
+        guard let currentUserEmail = user.email else {
+            print("Kullanıcının e-posta adresi yok.")
+            return
+        }
+
+        firestoreDB.collection("users").document(currentUserEmail).collection("goalToday").addSnapshotListener { (querySnapshot, error) in
+            if let error = error {
+                print("Hata alındı: \(error.localizedDescription)")
+                return
+            }
+
+            guard let querySnapshot = querySnapshot else {
+                print("Belgeler alınamadı.")
+                return
+            }
+
+            var fetchedRuns: [[String: Any]] = []
+
+            for document in querySnapshot.documents {
+                let data = document.data()
+                let km = data["km"] as? Double ?? 0.0
+                let date = data["date"] as? String ?? ""
+                let time = data["time"] as? Double ?? 0.0
+
+                let runData: [String: Any] = ["km": km, "date": date, "time": time ]
+                fetchedRuns.append(runData)
+            }
+
+            self.runsAim = fetchedRuns
+
+            DispatchQueue.main.async {
+                self.collectionViewVertical.reloadData()
+            }
+        }
+    }
     
+    private func getRunsFromFirestore(forUser user: User) {
+        let firestoreDB = Firestore.firestore()
+
+        guard let currentUserEmail = user.email else {
+            print("Kullanıcının e-posta adresi yok.")
+            return
+        }
+
+        firestoreDB.collection("users").document(currentUserEmail).collection("goalCompleted").addSnapshotListener { (querySnapshot, error) in
+            if let error = error {
+                print("Hata alındı: \(error.localizedDescription)")
+                return
+            }
+
+            guard let querySnapshot = querySnapshot else {
+                print("Belgeler alınamadı.")
+                return
+            }
+
+            var fetchedRuns: [[String: Any]] = []
+
+            for document in querySnapshot.documents {
+                let data = document.data()
+                let km = data["km_done"] as? Double ?? 0.0
+                let date = data["date"] as? String ?? ""
+                let time = data["time_done"] as? Double ?? 0.0
+                
+                let aimDistance = 10.0
+
+                let completionRate = Int((km / aimDistance) * 100)
+                print("Tamamlanma yüzdesi: \(completionRate)%")
+                
+                let runData: [String: Any] = ["km_done": km, "date": date, "time_done": time ]
+                fetchedRuns.append(runData)
+            }
+
+            self.runsDone = fetchedRuns
+
+            DispatchQueue.main.async {
+                self.collectionViewVertical.reloadData()
+            }
+        }
+    }
+
+//    self.updateProgressBars()
+//
+
     private func setupViews() {
         view.addSubviews(labelHomeSecond, labelHomeThird, searchBar,collectionViewHorizontalTitleLabel, collectionViewHorizontal, collectionViewVerticaltitleLabel,collectionViewVertical)
         
         setupLayout()
-        
     }
+    
     private func setupLayout() {
         labelHomeThird.snp.makeConstraints ({ make in
             make.top.equalToSuperview().offset(70)
@@ -134,27 +219,50 @@ class HomeVC: UIViewController, ProfileInfoDelegate {
         }
     }
 }
+
 extension HomeVC: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return collectionView == collectionViewHorizontal ? 5 : 10
+        return collectionView == collectionViewHorizontal ? 5 : runsDone.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        if collectionView == collectionViewHorizontal {
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "HorizontalCell", for: indexPath) as! HomeCollectionViewHorizontalCell
+        if collectionView == collectionViewVertical {
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "VerticalCell", for: indexPath) as! HomeCollectionViewVerticalCell
+            let runData = runsDone[indexPath.item]
+                
+            if let dateString = runData["date"] as? String,
+               let distance = runData["km_done"] as? Double,
+               let completionRate = runData["completionRate"] as? Int {
+                let dateFormatter = DateFormatter()
+                dateFormatter.dateFormat = "dd.MM.yyyy"
+                if let date = dateFormatter.date(from: dateString) {
+                    cell.configure(date: date, distance: distance)
+                }
+            }
+            
             return cell
         } else {
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "VerticalCell", for: indexPath) as! HomeCollectionViewVerticalCell
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "HorizontalCell", for: indexPath) as! HomeCollectionViewHorizontalCell
             return cell
         }
     }
-    
+
+
+
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         if collectionView == collectionViewHorizontal {
             return CGSize(width: 280, height: 174)
         } else {
             return CGSize(width: collectionView.frame.width - 30, height: 100)
         }
+    }
+}
+
+extension HomeVC: ProfileInfoDelegate {
+    func didReceiveName(_ name: String) {
+        username = name
+        labelHomeSecond.text = name
+        labelHomeThird.text = "Günaydın \(name)"
     }
 }
