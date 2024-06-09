@@ -4,7 +4,7 @@
 //
 //  Created by d-datmaca on 6.03.2024.
 //
-//bu bir commit denemesidir.
+//TODO: bilgi alımları burdan home a giden ussername var ona göre tekrar bir düzenleme gerekecek
 import UIKit
 import SnapKit
 import FirebaseDatabase

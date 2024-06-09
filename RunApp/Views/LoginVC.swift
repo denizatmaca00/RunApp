@@ -6,6 +6,8 @@
 // TODO: arkaplana map gömülebilir
 // TODO: logo tamamlansın (yazı şeklinde)
 // TODO: tectfield iconunu sola alabiliriz
+// TODO: beni hatırla ekle
+// TODO: prelogini splashscreen olayına bir bak daha önce loginse orası hızlı geçsin
 
 import UIKit
 import SnapKit
@@ -79,7 +81,7 @@ class LoginVC: UIViewController {
             Auth.auth().signIn(withEmail: emailTextField.textField.text!, password: passwordTextField.textField.text!) {
                 (authData, error) in
                 if(error != nil){
-                    print("yalınış")
+                    AppAlert.showAlert(title: "Hata", message: "Bilgileri yanlış girdiniz.", type: .error, viewController: self)
                 } else{
                     let vc = TabbarVC()
                     self.navigationController?.pushViewController(vc, animated: true)                }

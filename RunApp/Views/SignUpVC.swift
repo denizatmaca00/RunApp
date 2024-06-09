@@ -136,6 +136,7 @@ class SignUpVC: UIViewController {
                 "surname": surname,
                 "userName": username,
                 "email": email,
+                "password": password,
             ]) { (error) in
                 if let error = error {
                     print("Firestore Hata: \(error.localizedDescription)")

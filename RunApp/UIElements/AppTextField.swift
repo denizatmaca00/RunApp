@@ -22,7 +22,7 @@ class AppTextField: UIView {
     private var icon: UIImage?
     private var iconPosition: IconPosition
 
-    private lazy var titleLbl: UILabel = {
+    lazy var titleLbl: UILabel = {
         let lbl = UILabel()
         lbl.text = title
         lbl.textColor = .black

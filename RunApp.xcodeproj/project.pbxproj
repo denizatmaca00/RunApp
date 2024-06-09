@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C673D9232C160DD200C07E70 /* ProfileInfoVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = C673D9222C160DD200C07E70 /* ProfileInfoVC.swift */; };
+		C673D9252C1616A800C07E70 /* AppAlert.swift in Sources */ = {isa = PBXBuildFile; fileRef = C673D9242C1616A800C07E70 /* AppAlert.swift */; };
 		D52AC7062B99CE1500379EC0 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = D52AC7052B99CE1500379EC0 /* GoogleService-Info.plist */; };
 		D52AC7092B99CFCE00379EC0 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = D52AC7082B99CFCE00379EC0 /* FirebaseAuth */; };
 		D52AC70B2B99CFCE00379EC0 /* FirebaseDatabase in Frameworks */ = {isa = PBXBuildFile; productRef = D52AC70A2B99CFCE00379EC0 /* FirebaseDatabase */; };
@@ -38,6 +40,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		C673D9222C160DD200C07E70 /* ProfileInfoVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileInfoVC.swift; sourceTree = "<group>"; };
+		C673D9242C1616A800C07E70 /* AppAlert.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppAlert.swift; sourceTree = "<group>"; };
 		D52AC7052B99CE1500379EC0 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		D5808F8D2B95B45600E3DB53 /* RunApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RunApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D5808F902B95B45600E3DB53 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -126,6 +130,7 @@
 				D5808FC32B97440500E3DB53 /* MapVC.swift */,
 				D5808FC52B97570000E3DB53 /* AnalyticVC.swift */,
 				D5808FC92B98575700E3DB53 /* ProfileVC.swift */,
+				C673D9222C160DD200C07E70 /* ProfileInfoVC.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -136,6 +141,7 @@
 				D5808FA92B95C40100E3DB53 /* AppButton.swift */,
 				D5808FB22B95EFB800E3DB53 /* AppTextField.swift */,
 				D5808FC12B97352000E3DB53 /* AppLabel.swift */,
+				C673D9242C1616A800C07E70 /* AppAlert.swift */,
 			);
 			path = UIElements;
 			sourceTree = "<group>";
@@ -249,6 +255,7 @@
 				D5808FC42B97440500E3DB53 /* MapVC.swift in Sources */,
 				D5808F912B95B45600E3DB53 /* AppDelegate.swift in Sources */,
 				D5808FCC2B987E9000E3DB53 /* ProfileInfoCollectionViewCell.swift in Sources */,
+				C673D9252C1616A800C07E70 /* AppAlert.swift in Sources */,
 				D5808FC02B9709CB00E3DB53 /* TabbarVC.swift in Sources */,
 				D5808FB52B960C9800E3DB53 /* LoginVC.swift in Sources */,
 				D5808FBC2B96FA7C00E3DB53 /* HomeCollectionViewHorizontalCell.swift in Sources */,
@@ -256,6 +263,7 @@
 				D5808FB92B96F47400E3DB53 /* HomeVC.swift in Sources */,
 				D5808FBE2B96FAC700E3DB53 /* HomeCollectionViewVerticalCell.swift in Sources */,
 				D5808F932B95B45600E3DB53 /* SceneDelegate.swift in Sources */,
+				C673D9232C160DD200C07E70 /* ProfileInfoVC.swift in Sources */,
 				D5808FA52B95BB2C00E3DB53 /* Extensions.swift in Sources */,
 				D5808FB32B95EFB800E3DB53 /* AppTextField.swift in Sources */,
 				D5808FCA2B98575700E3DB53 /* ProfileVC.swift in Sources */,
