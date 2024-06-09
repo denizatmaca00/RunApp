@@ -4,7 +4,8 @@
 //
 //  Created by d-datmaca on 5.03.2024.
 // TODO: takvim biraz ileri alınabilir
-// TODO: gün ortada durmuyor
+// TODO: girişlerde sadece sayı mı alacağım ona bakayım klavye girişinde
+// TODO:
 
 
 import UIKit

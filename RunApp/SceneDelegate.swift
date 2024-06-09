@@ -6,24 +6,23 @@
 //
 
 import UIKit
+import FirebaseAuth
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     var window: UIWindow?
 
-
-    func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
-        guard let windowScene = (scene as? UIWindowScene) else { return }
-        let window = UIWindow(windowScene: windowScene)
-        let rootViewController = PreLoginVC()
-        let navigationController = UINavigationController(rootViewController: rootViewController)
-        window.rootViewController = navigationController
-        window.makeKeyAndVisible()
-        self.window = window
-    }
+//    func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
+//        guard let windowScene = (scene as? UIWindowScene) else { return }
+//        let window = UIWindow(windowScene: windowScene)
+//        let rootViewController = PreLoginVC()
+//        let navigationController = UINavigationController(rootViewController: rootViewController)
+//        window.rootViewController = navigationController
+//        window.makeKeyAndVisible()
+//        self.window = window
+//    }
+//    
     
-    /*
-     var window: UIWindow?
 
      func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
          guard let windowScene = (scene as? UIWindowScene) else { return }
@@ -44,7 +43,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
          
          window.makeKeyAndVisible()
      }
- */
+
      
 
 

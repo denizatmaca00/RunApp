@@ -3,7 +3,10 @@
 //  RunApp
 //
 //  Created by d-datmaca on 5.03.2024.
-// TODO: yanyana kayan bir collectionview bir de onun altına aşapıya kayan bir colleciton view koymak istiyorum
+// TODO: üye ol sayfasında şifrelerde strongpassword çıkıyor
+// TODO: profil bilgilerinde şifreyi tutmamışsın şifre değiştirme ekranında işe yarayacak ya da datayı unutursan :/
+// TODO: oturumdan çık butonu
+// TODO:
 
 import UIKit
 import FirebaseFirestore
@@ -232,13 +235,8 @@ extension HomeVC: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout
             let runData = runsDone[indexPath.item]
                 
             if let dateString = runData["date"] as? String,
-               let distance = runData["km_done"] as? Double,
-               let completionRate = runData["completionRate"] as? Int {
-                let dateFormatter = DateFormatter()
-                dateFormatter.dateFormat = "dd.MM.yyyy"
-                if let date = dateFormatter.date(from: dateString) {
-                    cell.configure(date: date, distance: distance)
-                }
+               let distance = runData["km_done"] as? Double {
+                   cell.configure(date: dateString, distance: distance)
             }
             
             return cell
@@ -247,6 +245,7 @@ extension HomeVC: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout
             return cell
         }
     }
+
 
 
 
